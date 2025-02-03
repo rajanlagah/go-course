@@ -1,24 +1,22 @@
 package main
 
 import (
+	"context"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
 	"github.com/rajanlagah/go-course/config"
+	"github.com/rajanlagah/go-course/db"
+	"github.com/rajanlagah/go-course/routes"
 )
 
 func main(){
-	handler := gin.Default()
-	handler.GET("/", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, gin.H{
-			"message": "Ok from GIN",
-		})
-	})
-	config.Config.LoadConfig()
+	db.InitDB()
+	handler := routes.MounteRoutes()
 
 	server := &http.Server{
 		Addr : config.Config.AppPort,
 		Handler: handler,
 	}
 	server.ListenAndServe()
+	defer db.DB.Close(context.Background())
 }
