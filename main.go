@@ -17,6 +17,6 @@ func main(){
 		Addr : config.Config.AppPort,
 		Handler: handler,
 	}
-	server.ListenAndServe()
 	defer db.DB.Close(context.Background())
+	server.ListenAndServe()
 }
