@@ -5,24 +5,25 @@ import (
 	"time"
 )
 
-type Task struct {}
+type Task struct{}
 
 var TaskRepository = Task{}
 
 type PostTaskPayload struct {
-	Title string `json:"title" binding:"required"`
+	Title   string `json:"title" binding:"required"`
 	Content string `json:"content" binding:"required"`
-	Status string `json:"status"`
+	Status  string `json:"status"`
 }
 
+func (t Task) SaveTaskQuery(payload PostTaskPayload) (int, error) {
+	var id int
 
-func (t Task) SaveTaskQuery(payload PostTaskPayload) (int, error){
-	var id int;
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
 	query := `Insert into tasks (title, content, status) VALUES ($1, $2, $3) RETURNING id;`
 
-	err := DB.QueryRow(context.Background(), query, payload.Title, payload.Content, payload.Status).Scan(&id)
-
+	err := DB.QueryRow(ctx, query, payload.Title, payload.Content, payload.Status).Scan(&id)
 	if err != nil {
 		return 0, err
 	}
@@ -31,44 +32,48 @@ func (t Task) SaveTaskQuery(payload PostTaskPayload) (int, error){
 }
 
 type TaskType struct {
-	ID int `json:"id"`
-	Title string `json:"title"`
-	Content string `json:"content"`
-	Status string `json:"status"`
+	ID        int       `json:"id"`
+	Title     string    `json:"title"`
+	Content   string    `json:"content"`
+	Status    string    `json:"status"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
-func (t Task) ReadTaskQuery() ([]TaskType, error){
-	var tasks []TaskType;
-
-	query := `Select id, title, content, status, created_at FROM tasks ORDER BY created_at DESC LIMIT 10;`
-
-	rows, err := DB.Query(context.Background(), query)
-
-	if err != nil {
-		return nil, err
-	}
-
-	defer rows.Close()
-
-	for  rows.Next() {
-		var item TaskType;
-		err := rows.Scan(&item.ID, &item.Title, &item.Content, &item.Status, &item.CreatedAt)
-
-		if err != nil {
-			return nil, err
-		}
-		tasks = append(tasks, item)
-	}
-
+func (t Task) ReadTaskQuery() ([]TaskType, error) {
+	var tasks []TaskType
 	return tasks, nil
+	// ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	// defer cancel()
+
+	// query := `Select id, title, content, status, created_at FROM tasks ORDER BY created_at DESC LIMIT 10;`
+
+	// rows, err := DB.Query(ctx, query)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// defer rows.Close()
+
+	// for rows.Next() {
+	// 	var item TaskType
+	// 	err := rows.Scan(&item.ID, &item.Title, &item.Content, &item.Status, &item.CreatedAt)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// 	tasks = append(tasks, item)
+	// }
+
+	// if err = rows.Err(); err != nil {
+	// 	return nil, err
+	// }
+
+	// return tasks, nil
 }
 
 type UpdateTaskPayload struct {
-	ID int `json:"id" binding:"required"`
-	Title string `json:"title" binding:"max=100"`
-	Content string `json:"content" binding:"max=1000"`
-	Status string `json:"status"`
+	ID        int       `json:"id" binding:"required"`
+	Title     string    `json:"title" binding:"max=100"`
+	Content   string    `json:"content" binding:"max=1000"`
+	Status    string    `json:"status"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
@@ -79,10 +84,9 @@ func (t Task) UpdateTask(payload UpdateTaskPayload) error {
 		WHERE id = $4
 	`
 
-  _, err := DB.Exec(context.Background(), query, payload.Title,payload.Content, payload.Status, payload.ID)
-  return err
+	_, err := DB.Exec(context.Background(), query, payload.Title, payload.Content, payload.Status, payload.ID)
+	return err
 }
-
 
 func (t Task) GetTaskById(id int) (TaskType, error) {
 

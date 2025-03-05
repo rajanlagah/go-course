@@ -1,0 +1,18 @@
+branch-defaults:
+  main:
+    environment: go-env-4
+    group_suffix: null
+global:
+  application_name: go-course-cli-4
+  branch: null
+  default_ec2_keyname: rajan_personal
+  default_platform: Go 1 running on 64bit Amazon Linux 2023
+  default_region: ap-south-1
+  include_git_submodules: true
+  instance_profile: null
+  platform_name: null
+  platform_version: null
+  profile: null
+  repository: null
+  sc: git
+  workspace_type: Application
