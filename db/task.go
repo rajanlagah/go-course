@@ -41,32 +41,31 @@ type TaskType struct {
 
 func (t Task) ReadTaskQuery() ([]TaskType, error) {
 	var tasks []TaskType
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	query := `Select id, title, content, status, created_at FROM tasks ORDER BY created_at DESC LIMIT 10;`
+
+	rows, err := DB.Query(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var item TaskType
+		err := rows.Scan(&item.ID, &item.Title, &item.Content, &item.Status, &item.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		tasks = append(tasks, item)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
 	return tasks, nil
-	// ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	// defer cancel()
-
-	// query := `Select id, title, content, status, created_at FROM tasks ORDER BY created_at DESC LIMIT 10;`
-
-	// rows, err := DB.Query(ctx, query)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// defer rows.Close()
-
-	// for rows.Next() {
-	// 	var item TaskType
-	// 	err := rows.Scan(&item.ID, &item.Title, &item.Content, &item.Status, &item.CreatedAt)
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
-	// 	tasks = append(tasks, item)
-	// }
-
-	// if err = rows.Err(); err != nil {
-	// 	return nil, err
-	// }
-
-	// return tasks, nil
 }
 
 type UpdateTaskPayload struct {
