@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/rajanlagah/go-course/config"
@@ -9,7 +8,7 @@ import (
 	"github.com/rajanlagah/go-course/routes"
 )
 
-func main(){
+func main() {
 	db.InitDB()
 	handler := routes.MounteRoutes()
 	// handler := gin.Default()
@@ -20,9 +19,9 @@ func main(){
 	// })
 
 	server := &http.Server{
-		Addr : config.Config.AppPort,
+		Addr:    config.Config.AppPort,
 		Handler: handler,
 	}
-	defer db.DB.Close(context.Background())
+	defer db.DB.Close()
 	server.ListenAndServe()
 }
