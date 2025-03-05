@@ -7,7 +7,6 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/rajanlagah/go-course/config"
-	"github.com/rajanlagah/go-course/middleware"
 	"github.com/rajanlagah/go-course/routes/handlers"
 )
 
@@ -28,7 +27,7 @@ func MounteRoutes() *gin.Engine{
 		})
 	})
 
-	taskRoutes := handler.Group("/task", middleware.AuthorizationMiddleWare())
+	taskRoutes := handler.Group("/task")
 	{
 		taskRoutes.PATCH("/", handlers.UpdateTask)
 		taskRoutes.POST("/", handlers.SaveTask)
