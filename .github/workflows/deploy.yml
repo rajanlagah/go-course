@@ -1,0 +1,44 @@
+name: Deploy to AWS Elastic Beanstalk
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to AWS EB
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.25  # Change this based on your Go version
+
+      - name: Install dependencies
+        run: go mod tidy
+
+      - name: Build application
+        run: go build -o app .
+
+      - name: Install AWS CLI & EB CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip
+          pip3 install awsebcli --upgrade --user
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Deploy to Elastic Beanstalk
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          EB_ENV_NAME: ${{ secrets.EB_ENV_NAME }}
+          EB_APP_NAME: ${{ secrets.EB_APP_NAME }}
+        run: |
+          eb init $EB_APP_NAME --platform "Go 1.x" --region $AWS_REGION
+          eb deploy $EB_ENV_NAME
