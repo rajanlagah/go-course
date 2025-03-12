@@ -30,7 +30,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y python3-pip
           pip3 install awsebcli --upgrade --user
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          echo "$HOME/.local/bin:$HOME/.local/bin/aws" >> $GITHUB_PATH
+
+      - name: Debug AWS Identity
+        run: aws sts get-caller-identity
+
+      - name: Test S3 Access
+        run: aws s3 ls s3://elasticbeanstalk-ap-south-1-559050252448
 
       - name: Deploy to Elastic Beanstalk
         env:
@@ -41,4 +47,5 @@ jobs:
           EB_APP_NAME: ${{ secrets.EB_APP_NAME }}
         run: |
           eb init $EB_APP_NAME --platform "Go 1 running on 64bit Amazon Linux 2023" --region $AWS_REGION
-          eb deploy $EB_ENV_NAME
+          eb use $EB_ENV_NAME
+          eb deploy
