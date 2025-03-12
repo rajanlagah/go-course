@@ -40,4 +40,5 @@ jobs:
           EB_ENV_NAME: ${{ secrets.EB_ENV_NAME }}
           EB_APP_NAME: ${{ secrets.EB_APP_NAME }}
         run: |
+          eb init $EB_APP_NAME --platform "Go 1 running on 64bit Amazon Linux 2023" --region $AWS_REGION
           eb deploy $EB_ENV_NAME
