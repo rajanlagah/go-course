@@ -10,16 +10,17 @@ import (
 	"github.com/rajanlagah/go-course/routes/handlers"
 )
 
-func MounteRoutes() *gin.Engine{
-	handler := gin.Default()
+func MounteRoutes() *gin.Engine {
+	gin.SetMode(gin.ReleaseMode)
+	handler := gin.New()
 	handler.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000", config.Config.FEOriginURL},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}, 
-		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"}, 
-		ExposeHeaders:    []string{"Content-Length", "Authorization"}, 
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length", "Authorization"},
 		AllowCredentials: true,
-		MaxAge: 12 * time.Hour,
-	  }))
+		MaxAge:           12 * time.Hour,
+	}))
 
 	handler.GET("/", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{
@@ -37,15 +38,15 @@ func MounteRoutes() *gin.Engine{
 
 	userLoginRoutes := handler.Group("/login")
 	{
-		userLoginRoutes.GET("/google",  handlers.HandleGoogleLogin)
+		userLoginRoutes.GET("/google", handlers.HandleGoogleLogin)
 	}
 	callbackLoginRoutes := handler.Group("/callback")
 	{
-		callbackLoginRoutes.GET("/google",  handlers.HandleGoogleCallback)
+		callbackLoginRoutes.GET("/google", handlers.HandleGoogleCallback)
 	}
 
 	handler.NoRoute(func(ctx *gin.Context) {
-		ctx.JSON(http.StatusNotFound, gin.H{"message":"Route not found"})
+		ctx.JSON(http.StatusNotFound, gin.H{"message": "Route not found"})
 	})
 	return handler
 }

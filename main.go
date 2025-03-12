@@ -1,15 +1,15 @@
 package main
 
 import (
-	"context"
 	"net/http"
+	"time"
 
 	"github.com/rajanlagah/go-course/config"
 	"github.com/rajanlagah/go-course/db"
 	"github.com/rajanlagah/go-course/routes"
 )
 
-func main(){
+func main() {
 	db.InitDB()
 	handler := routes.MounteRoutes()
 	// handler := gin.Default()
@@ -20,9 +20,12 @@ func main(){
 	// })
 
 	server := &http.Server{
-		Addr : config.Config.AppPort,
-		Handler: handler,
+		Addr:         config.Config.AppPort,
+		Handler:      handler,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  120 * time.Second,
 	}
-	defer db.DB.Close(context.Background())
+	defer db.DB.Close()
 	server.ListenAndServe()
 }
