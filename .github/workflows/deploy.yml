@@ -23,7 +23,9 @@ jobs:
         run: go mod tidy
 
       - name: Build application
-        run: go build -o app .
+        run: |
+            mkdir -p bin
+            go build -o bin/application .
 
       - name: Install AWS CLI & EB CLI
         run: |
