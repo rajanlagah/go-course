@@ -24,7 +24,7 @@ func MounteRoutes() *gin.Engine {
 
 	handler.GET("/", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{
-			"message": "Ok from Github",
+			"message": "Ok from Github actions",
 		})
 	})
 

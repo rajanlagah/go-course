@@ -5,3 +5,4 @@
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 myenv
+bin
