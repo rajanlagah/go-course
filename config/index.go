@@ -8,20 +8,20 @@ import (
 )
 
 type envConfig struct {
-	AppPort string
-	DbPath string
-	GoogleClientID string
+	AppPort             string
+	DbPath              string
+	GoogleClientID      string
 	GoogleClientSeceret string
-	GoogleRedirectURL string
-	JWTSaltKey string
-	FEOriginURL string
+	GoogleRedirectURL   string
+	JWTSaltKey          string
+	FEOriginURL         string
 }
 
 func (e *envConfig) LoadConfig() {
 	err := godotenv.Load()
-	
+
 	if err != nil {
-		log.Panic("ENV file not loaded")
+		log.Print("Error:", err)
 	}
 
 	e.AppPort = loadString("APP_PORT", ":8080")
@@ -35,7 +35,7 @@ func (e *envConfig) LoadConfig() {
 
 var Config envConfig
 
-func init(){
+func init() {
 	Config.LoadConfig()
 }
 
