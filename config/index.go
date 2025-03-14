@@ -21,7 +21,7 @@ func (e *envConfig) LoadConfig() {
 	err := godotenv.Load()
 
 	if err != nil {
-		log.Print("Error:", err)
+		log.Printf("ENV file not loaded")
 	}
 
 	e.AppPort = loadString("APP_PORT", ":8080")
